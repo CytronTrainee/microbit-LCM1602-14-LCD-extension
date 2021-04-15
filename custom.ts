@@ -34,32 +34,67 @@ const SETDDRAMADDR = 0X80;
 
 //for functionset
 const FUNCTIONSET = 0X20;
-const _5x10DOTS = 0X04;
-const _5x8DOTS = 0X00;
-const _1LINE = 0X00;
-const _2LINE = 0X08;
-const _8BITMODE = 0X10;
-const  _4BITMODE = 0X00;     
+const TENDOTS = 0X04;
+const EIGHTDOTS = 0X00;
+const ONELINE = 0X00;
+const TWOLINE = 0X08;
+const EIGHTBITMODE = 0X10;
+const FOURBITMODE = 0X00;     
+
+/**
+ * LCD_i2c blocks
+ */
 
 //% weight=100 color=#0fbc11 icon=""
 namespace LCD_i2c {
-    /**
-     * TODO: describe your function here
-     * @param n describe parameter here, eg: 5
-     * @param s describe parameter here, eg: "Hello"
-     * @param e describe parameter here
-     */
-    //% block
-    export function foo(n: number, s: string, e: MyEnum): void {
-        // Add code here
+
+    function command(value: number): void
+    {
+        let buffer = pins.createBuffer(2);
+        buffer[0] = 0x80;
+        buffer[1] = value;
+        pins.i2cWriteBuffer(0, buffer);
+        basic.pause(1);
     }
 
-    /**
-     * TODO: describe your function here
-     * @param value describe value here, eg: 5
-     */
-    //% block
-    export function fib(value: number): number {
-        return value <= 1 ? value : fib(value -1) + fib(value - 2);
+    function write(value: number): void
+    {
+        let buffer = pins.createBuffer(2);
+        buffer[0] = 0x40;
+        buffer[1] = value;
+        pins.i2cWriteBuffer(0, buffer);
+        basic.pause(1);
+    }
+    //% blockId="I2C_LCD1620_SET_ADDRESS" block="LCD initialize with Address %addr"
+    //% weight=100 blockGap=8
+    //% parts=LCD1602_I2C trackArgs=0
+    export function LcdBegin(Addr: number) 
+    {
+        basic.pause(5000);
+        command(FUNCTIONSET | TWOLINE);
+        basic.pause(1000);
+        display();
+        basic.pause(4);
+        clear();
+        basic.pause(200);
+        command(ENTRYMODESET | ENTRYLEFT | ENTRYSHIFTDECREMENT);
+
+        setCursor(0,0);
+    }
+    export function display() : void 
+    {
+        command(DISPLAYCONTROL | DISPLAYON | CURSOROFF | BLINKOFF);
+    }
+    export function clear() : void
+    {
+        command(CLEARDISPLAY);
+        basic.pause(2000);
+        setCursor(0,0);
+    }
+    // Set cursor
+    function setCursor(line: number, column: number) 
+    {
+        const offsets = [0x00, 0x40, 0x14, 0x54];
+        command(SETDDRAMADDR | (offsets[line] + column));
     }
 }
