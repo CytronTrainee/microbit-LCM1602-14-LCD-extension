@@ -47,29 +47,14 @@ const FOURBITMODE = 0X00;
 
 //% weight=100 color=#0fbc11 icon=""
 namespace LCD_i2c {
+    let addrs: number
 
-    function command(value: number): void
-    {
-        let buffer = pins.createBuffer(2);
-        buffer[0] = 0x80;
-        buffer[1] = value;
-        pins.i2cWriteBuffer(0, buffer);
-        basic.pause(1);
-    }
-
-    function write(value: number): void
-    {
-        let buffer = pins.createBuffer(2);
-        buffer[0] = 0x40;
-        buffer[1] = value;
-        pins.i2cWriteBuffer(0, buffer);
-        basic.pause(1);
-    }
     //% blockId="I2C_LCD1620_SET_ADDRESS" block="LCD initialize with Address %addr"
     //% weight=100 blockGap=8
     //% parts=LCD1602_I2C trackArgs=0
     export function LcdBegin(Addr: number) 
     {
+        addrs = Addr;
         basic.pause(5000);
         command(FUNCTIONSET | TWOLINE);
         basic.pause(1000);
@@ -96,5 +81,19 @@ namespace LCD_i2c {
     {
         const offsets = [0x00, 0x40, 0x14, 0x54];
         command(SETDDRAMADDR | (offsets[line] + column));
+    }
+
+    function command(value: number): void
+    {
+        pins.i2cWriteNumber(addrs, 0x80, NumberFormat.Int8LE);
+        pins.i2cWriteNumber(addrs, value, NumberFormat.Int8LE);
+        basic.pause(1);
+    }
+
+    function write(value: number): void
+    {
+        pins.i2cWriteNumber(addrs, 0x40, NumberFormat.Int8LE);
+        pins.i2cWriteNumber(addrs, value, NumberFormat.Int8LE);
+        basic.pause(1);
     }
 }
