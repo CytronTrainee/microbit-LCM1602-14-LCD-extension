@@ -3,13 +3,11 @@
     "version": "2.0.0",
     "description": "",
     "dependencies": {
-        "core": "*",
-        "radio": "*",
-        "microphone": "*"
+        "core": "*"
     },
     "files": [
         "README.md",
-        "custom.ts"
+        "LCM1602-14_LCD.ts"
     ],
     "testFiles": [
         "test.ts"
