@@ -18,12 +18,6 @@ To edit this repository in MakeCode.
 * click on **Import** then click on **Import URL**
 * paste **https://github.com/cytrontrainee/microbit-lcm1602-14-lcd-extension** and click import
 
-## Blocks preview
-
-This image shows the blocks code from the last commit in master.
-This image may take a few minutes to refresh.
-
-![A rendered view of the blocks](https://github.com/cytrontrainee/microbit-lcm1602-14-lcd-extension/raw/master/.github/makecode/blocks.png)
 
 #### Metadata (used for search, rendering)
 
