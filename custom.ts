@@ -41,6 +41,7 @@ const TWOLINE = 0X08;
 const EIGHTBITMODE = 0X10;
 const FOURBITMODE = 0X00;     
 
+
 /**
  * LCD_i2c blocks
  */
@@ -55,13 +56,13 @@ namespace LCD_i2c {
     export function LcdBegin(Addr: number) 
     {
         addrs = Addr;
-        basic.pause(5000);
+        basic.pause(50);
         command(FUNCTIONSET | TWOLINE);
-        basic.pause(1000);
+        basic.pause(10);
         display();
-        basic.pause(4);
+        basic.pause(0.04);
         clear();
-        basic.pause(200);
+        basic.pause(20);
         command(ENTRYMODESET | ENTRYLEFT | ENTRYSHIFTDECREMENT);
 
         setCursor(0,0);
@@ -73,7 +74,7 @@ namespace LCD_i2c {
     export function clear() : void
     {
         command(CLEARDISPLAY);
-        basic.pause(2000);
+        basic.pause(2);
         setCursor(0,0);
     }
     // Set cursor
@@ -85,15 +86,19 @@ namespace LCD_i2c {
 
     function command(value: number): void
     {
-        pins.i2cWriteNumber(addrs, 0x80, NumberFormat.Int8LE);
-        pins.i2cWriteNumber(addrs, value, NumberFormat.Int8LE);
+        let buffer = pins.createBuffer(2);
+        buffer[0] = 0x80;
+        buffer[1] = value;
+        pins.i2cWriteBuffer(0x3E, buffer);
         basic.pause(1);
     }
 
     function write(value: number): void
     {
-        pins.i2cWriteNumber(addrs, 0x40, NumberFormat.Int8LE);
-        pins.i2cWriteNumber(addrs, value, NumberFormat.Int8LE);
+        let buffer = pins.createBuffer(2);
+        buffer[0] = 0x40;
+        buffer[1] = value;
+        pins.i2cWriteBuffer(0x3E, buffer);
         basic.pause(1);
     }
 }
