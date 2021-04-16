@@ -50,9 +50,9 @@ const FOURBITMODE = 0X00;
 namespace LCD_i2c {
     let addrs: number
 
-    //% blockId="I2C_LCD1620_SET_ADDRESS" block="LCD initialize with Address %addr"
+    //% blockId="I2C_LCM1602_LCD_INITIALIZE" block="LCD initialize with Address %Addr"
     //% weight=100 blockGap=8
-    //% parts=LCD1602_I2C trackArgs=0
+    //% parts=LCM1602_I2C trackArgs=0
     export function LcdBegin(Addr: number) 
     {
         addrs = Addr;
@@ -64,12 +64,15 @@ namespace LCD_i2c {
         clear();
         basic.pause(20);
         command(ENTRYMODESET | ENTRYLEFT | ENTRYSHIFTDECREMENT);
-
         setCursor(0,0);
     }
     export function display() : void 
     {
         command(DISPLAYCONTROL | DISPLAYON | CURSOROFF | BLINKOFF);
+    }
+    export function noDisplay() : void 
+    {
+        command(DISPLAYCONTROL | DISPLAYOFF | CURSOROFF | BLINKOFF);
     }
     export function clear() : void
     {
@@ -77,11 +80,39 @@ namespace LCD_i2c {
         basic.pause(2);
         setCursor(0,0);
     }
+
     // Set cursor
-    function setCursor(line: number, column: number) 
+    //% blockId="I2C_LCM1602_SET_CURSOR" block="Enter row at %line and column at %column"
+    //% weight=90 blockGap=8
+    //% line.min=0 line.max=2
+    //% column.min=0 column.max=16
+    //% parts=LCD1602_I2C trackArgs=0
+    export function setCursor(line: number, column: number) 
     {
         const offsets = [0x00, 0x40, 0x14, 0x54];
         command(SETDDRAMADDR | (offsets[line] + column));
+    }
+
+    // Print any text
+    //% blockId="I2C_LCM1602_SET_CURSOR" block="Write your text here %s"
+    //% weight=90 blockGap=8
+    //% parts=LCD1602_I2C trackArgs=0
+    export function printText(s: string): void
+    {
+        for(let i = 0; i < s.length; i++)
+        {
+            write(s.charCodeAt(i))
+        }
+    }
+
+    export function scrollDisplayRight() : void 
+    {
+        command(CURSORSHIFT | DISPLAYMOVE | MOVERIGHT);
+    }
+    
+    export function scrollDisplayLeft() : void 
+    {
+        command(CURSORSHIFT | DISPLAYMOVE | MOVELEFT);
     }
 
     function command(value: number): void
